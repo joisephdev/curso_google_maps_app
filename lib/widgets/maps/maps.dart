@@ -1,9 +1,9 @@
 import 'dart:ui' as ui;
 
+import 'package:app_google_maps_flutter/widgets/maps/marker_information.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:google_maps_con_flutter/widgets/maps/marker_information.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class AppMap extends StatefulWidget {

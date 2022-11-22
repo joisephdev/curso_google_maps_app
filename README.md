@@ -1,4 +1,4 @@
-# google_maps_con_flutter
+# app_google_maps_flutter
 
 Google Maps con Flutter
 

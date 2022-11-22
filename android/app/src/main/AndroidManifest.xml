@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.google_maps_con_flutter">
+    package="com.example.app_google_maps_flutter">
    <application
-        android:label="google_maps_con_flutter"
+        android:label="app_google_maps_flutter"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
        <meta-data android:name="com.google.android.geo.API_KEY" android:value=""/>
