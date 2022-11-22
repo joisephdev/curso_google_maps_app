@@ -27,6 +27,7 @@ class _AppMapState extends State<AppMap> {
       child: Padding(
         padding: const EdgeInsets.only(bottom: 10.0, right: 10),
         child: SpeedDial(
+          backgroundColor: Theme.of(context).primaryColor,
           animatedIcon: AnimatedIcons.menu_close,
           overlayColor: Colors.black,
           overlayOpacity: 0.5,
@@ -85,14 +86,11 @@ class _AppMapState extends State<AppMap> {
           snippet: "Lat ${p.latitude} y Long ${p.longitude}",
         ),*/
         onTap: () {
-          print("OnTapped");
+          _markerSelected = null;
           _showInfo = !_showInfo;
-          print("_showInfo! $_showInfo");
           if (_showInfo) {
             const iconLocation = "assets/images/codigo_facilito.png";
             _markerSelected = MarkerSelected("My location", p, iconLocation);
-          } else {
-            _markerSelected = null;
           }
           setState(() {});
         },
