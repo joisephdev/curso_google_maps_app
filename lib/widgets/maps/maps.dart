@@ -1,5 +1,4 @@
-import 'dart:ui' as ui;
-
+import 'package:app_google_maps_flutter/common/common.dart';
 import 'package:app_google_maps_flutter/widgets/maps/marker_information.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +17,7 @@ class _AppMapState extends State<AppMap> {
   MarkerSelected? _markerSelected;
   MapType _mapType = MapType.normal;
   BitmapDescriptor? _markerIcon;
+  GoogleMapController? _mapController;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   final LatLng _position = const LatLng(4.754308066515901, -74.08905190602582);
 
@@ -59,8 +59,8 @@ class _AppMapState extends State<AppMap> {
     );
   }
 
-  CameraPosition get _cameraPosition {
-    return CameraPosition(target: _position, zoom: 13);
+  CameraPosition _cameraPosition() {
+    return CameraPosition(target: _position, zoom: 14, bearing: 90, tilt: 45);
   }
 
   _onDragEnd(LatLng position) {
@@ -75,20 +75,28 @@ class _AppMapState extends State<AppMap> {
 
     for (var p in positions) {
       _markers[MarkerId(p.toString())] = Marker(
-        // alpha: 0.5,
-        position: p,
+        /* alpha: 0.5,
         draggable: true,
-        onDragEnd: _onDragEnd,
-        anchor: const Offset(0.5, 0.5),
-        markerId: MarkerId(p.toString()),
-        /*  infoWindow: InfoWindow(
+        onDragEnd: (LatLng position) {},
+        infoWindow: InfoWindow(
           title: 'Marker Information',
           snippet: "Lat ${p.latitude} y Long ${p.longitude}",
         ),*/
+        position: p,
+        anchor: const Offset(0.5, 0.5),
+        markerId: MarkerId(p.toString()),
         onTap: () {
           _markerSelected = null;
           _showInfo = !_showInfo;
           if (_showInfo) {
+            _mapController!.animateCamera(
+              CameraUpdate.newCameraPosition(
+                const CameraPosition(
+                  zoom: 14,
+                  target: LatLng(12.175843310153466, -68.86858253689769),
+                ),
+              ),
+            );
             const iconLocation = "assets/images/codigo_facilito.png";
             _markerSelected = MarkerSelected("My location", p, iconLocation);
           }
@@ -103,21 +111,18 @@ class _AppMapState extends State<AppMap> {
     }
   }
 
-  static Future<Uint8List> getBytesFromAsset(String path, int width) async {
-    ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(
-      data.buffer.asUint8List(),
-      targetWidth: width,
+  CameraPosition _initialCameraPosition() {
+    return CameraPosition(
+      target: _position,
+      zoom: 14,
+      bearing: 90,
+      tilt: 45,
     );
-    ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
   }
 
   void _buildIcon() {
     const iconLocation = "assets/images/map_co.png";
-    getBytesFromAsset(iconLocation, 84).then((onValue) {
+    Common.getBytesFromAsset(iconLocation, 84).then((onValue) {
       setState(() => _markerIcon = BitmapDescriptor.fromBytes(onValue));
       _loadMarkers();
     });
@@ -141,11 +146,42 @@ class _AppMapState extends State<AppMap> {
         GoogleMap(
           mapType: _mapType,
           zoomControlsEnabled: false,
-          initialCameraPosition: _cameraPosition,
           markers: Set<Marker>.of(_markers.values),
+          initialCameraPosition: _initialCameraPosition(),
+          cameraTargetBounds: CameraTargetBounds(LatLngBounds(
+            northeast: _position,
+            southwest: _position,
+          )),
+          // 1: mundo, 5: Tierra / continente, 10: Ciudad, 15: calles, 20: edificios
+          minMaxZoomPreference: const MinMaxZoomPreference(13, 17),
+          onMapCreated: (GoogleMapController controller) {
+            _mapController = controller;
+          },
+          // Detecta cuando la cámara empieza a moverse
+          onCameraMoveStarted: () {
+            print("Ha iniciado!");
+          },
+          // Detecta cuando la cámara deje de moverse
+          onCameraIdle: () {
+            print("Se ha detenido!");
+          },
+          // Detecta cuando la cámara se está moviendo
+          onCameraMove: (CameraPosition position) {
+            print("La posicion $position");
+          },
         ),
         _floatButtons,
-        if (_showInfo) MarkerInformation(_markerSelected!)
+        if (_showInfo)
+          InkWell(
+            child: MarkerInformation(_markerSelected!),
+            onTap: () => setState(() {
+              _markerSelected = null;
+              _showInfo = false;
+              _mapController!.animateCamera(
+                CameraUpdate.newCameraPosition(_initialCameraPosition()),
+              );
+            }),
+          )
       ],
     );
   }
