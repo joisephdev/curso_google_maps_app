@@ -18,6 +18,7 @@ class _AppMapState extends State<AppMap> {
   MapType _mapType = MapType.normal;
   BitmapDescriptor? _markerIcon;
   GoogleMapController? _mapController;
+  LatLng? _latOnLongProgressMap;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   final LatLng _position = const LatLng(4.754308066515901, -74.08905190602582);
 
@@ -120,6 +121,38 @@ class _AppMapState extends State<AppMap> {
     );
   }
 
+  _onTapMap(LatLng position) {
+    print("_onTapMap ${position.toString()}");
+  }
+
+  _onLongProgressMap(LatLng position) {
+    _latOnLongProgressMap = position;
+    _showPopUpMenu();
+  }
+
+  _showPopUpMenu() async {
+    String? selected = await showMenu(
+      context: context,
+      elevation: 8.0,
+      position: const RelativeRect.fromLTRB(200, 200, 250, 250),
+      items: [
+        const PopupMenuItem(child: Text("QueHay"), value: "1"),
+        const PopupMenuItem(child: Text("Ir"), value: "2")
+      ],
+    );
+
+    print("#selected $selected");
+    if (selected != null) {
+      _getValue(selected);
+    }
+  }
+
+  _getValue(value) {
+    if (value == "1") {
+      print("Ubicación: ${_latOnLongProgressMap.toString()}");
+    }
+  }
+
   void _buildIcon() {
     const iconLocation = "assets/images/map_co.png";
     Common.getBytesFromAsset(iconLocation, 84).then((onValue) {
@@ -148,10 +181,12 @@ class _AppMapState extends State<AppMap> {
           zoomControlsEnabled: false,
           markers: Set<Marker>.of(_markers.values),
           initialCameraPosition: _initialCameraPosition(),
-          cameraTargetBounds: CameraTargetBounds(LatLngBounds(
+          onTap: _onTapMap,
+          onLongPress: _onLongProgressMap,
+          /*cameraTargetBounds: CameraTargetBounds(LatLngBounds(
             northeast: _position,
             southwest: _position,
-          )),
+          )),*/
           // 1: mundo, 5: Tierra / continente, 10: Ciudad, 15: calles, 20: edificios
           minMaxZoomPreference: const MinMaxZoomPreference(13, 17),
           onMapCreated: (GoogleMapController controller) {
