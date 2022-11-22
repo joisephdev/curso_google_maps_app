@@ -13,8 +13,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Google Maps con Flutter',
-      theme: ThemeData(primarySwatch: Colors.indigo),
+      // theme: ThemeData(primarySwatch: Colors.indigo),
       home: const MyHomePage(title: 'Google Maps con Flutter'),
+      theme: ThemeData(
+        primaryColor: const Color(0xFF262b34),
+      ),
     );
   }
 }
@@ -30,7 +33,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
+      appBar: AppBar(
+        title: Text(widget.title),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
       body: const AppMap(),
     );
   }

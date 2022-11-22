@@ -119,7 +119,7 @@ class _AppMapState extends State<AppMap> {
 
   void _buildIcon() {
     const iconLocation = "assets/images/map_co.png";
-    getBytesFromAsset(iconLocation, 76).then((onValue) {
+    getBytesFromAsset(iconLocation, 84).then((onValue) {
       setState(() => _markerIcon = BitmapDescriptor.fromBytes(onValue));
       _loadMarkers();
     });

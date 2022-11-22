@@ -41,7 +41,7 @@ class MarkerInformation extends StatelessWidget {
                 Text(
                   markerInfo.title,
                   style: const TextStyle(
-                    color: Colors.indigo,
+                    color: Colors.teal,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
