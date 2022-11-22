@@ -1,7 +1,3 @@
-#moment
-/android/app/src/main/AndroidManifest.xml
-/ios/Runner/AppDelegate.swift
-
 # Miscellaneous
 *.class
 *.log

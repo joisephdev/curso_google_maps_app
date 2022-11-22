@@ -124,7 +124,7 @@ class _AppMapState extends State<AppMap> {
       _loadMarkers();
     });
 
-/*    BitmapDescriptor.fromAssetImage(
+    /*BitmapDescriptor.fromAssetImage(
       createLocalImageConfiguration(context, size: const Size.fromHeight(12)),
       "assets/images/map_co.png",
     ).then((i) => setState(() => _markerIcon = i));*/
