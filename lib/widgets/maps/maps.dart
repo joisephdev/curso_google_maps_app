@@ -18,7 +18,6 @@ class _AppMapState extends State<AppMap> {
   MapType _mapType = MapType.normal;
   BitmapDescriptor? _markerIcon;
   GoogleMapController? _mapController;
-  LatLng? _latOnLongProgressMap;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
   final LatLng _position = const LatLng(4.754308066515901, -74.08905190602582);
 
@@ -60,14 +59,6 @@ class _AppMapState extends State<AppMap> {
     );
   }
 
-  CameraPosition _cameraPosition() {
-    return CameraPosition(target: _position, zoom: 14, bearing: 90, tilt: 45);
-  }
-
-  _onDragEnd(LatLng position) {
-    print("_onDragEnd $position");
-  }
-
   void _loadMarkers() {
     final positions = [
       // _position,
@@ -90,14 +81,14 @@ class _AppMapState extends State<AppMap> {
           _markerSelected = null;
           _showInfo = !_showInfo;
           if (_showInfo) {
-            _mapController!.animateCamera(
+            /*_mapController!.animateCamera(
               CameraUpdate.newCameraPosition(
                 const CameraPosition(
                   zoom: 14,
                   target: LatLng(12.175843310153466, -68.86858253689769),
                 ),
               ),
-            );
+            );*/
             const iconLocation = "assets/images/codigo_facilito.png";
             _markerSelected = MarkerSelected("My location", p, iconLocation);
           }
@@ -119,38 +110,6 @@ class _AppMapState extends State<AppMap> {
       bearing: 90,
       tilt: 45,
     );
-  }
-
-  _onTapMap(LatLng position) {
-    print("_onTapMap ${position.toString()}");
-  }
-
-  _onLongProgressMap(LatLng position) {
-    _latOnLongProgressMap = position;
-    _showPopUpMenu();
-  }
-
-  _showPopUpMenu() async {
-    String? selected = await showMenu(
-      context: context,
-      elevation: 8.0,
-      position: const RelativeRect.fromLTRB(200, 200, 250, 250),
-      items: [
-        const PopupMenuItem(child: Text("QueHay"), value: "1"),
-        const PopupMenuItem(child: Text("Ir"), value: "2")
-      ],
-    );
-
-    print("#selected $selected");
-    if (selected != null) {
-      _getValue(selected);
-    }
-  }
-
-  _getValue(value) {
-    if (value == "1") {
-      print("Ubicación: ${_latOnLongProgressMap.toString()}");
-    }
   }
 
   void _buildIcon() {
@@ -183,32 +142,12 @@ class _AppMapState extends State<AppMap> {
           zoomControlsEnabled: false,
           buildingsEnabled: false,
           rotateGesturesEnabled: false,
-          // scrollGesturesEnabled: false,
-          // zoomGesturesEnabled: false,
           markers: Set<Marker>.of(_markers.values),
           initialCameraPosition: _initialCameraPosition(),
-          onTap: _onTapMap,
-          onLongPress: _onLongProgressMap,
-          /*cameraTargetBounds: CameraTargetBounds(LatLngBounds(
-            northeast: _position,
-            southwest: _position,
-          )),*/
           // 1: mundo, 5: Tierra / continente, 10: Ciudad, 15: calles, 20: edificios
           minMaxZoomPreference: const MinMaxZoomPreference(13, 17),
           onMapCreated: (GoogleMapController controller) {
             _mapController = controller;
-          },
-          // Detecta cuando la cámara empieza a moverse
-          onCameraMoveStarted: () {
-            print("Ha iniciado!");
-          },
-          // Detecta cuando la cámara deje de moverse
-          onCameraIdle: () {
-            print("Se ha detenido!");
-          },
-          // Detecta cuando la cámara se está moviendo
-          onCameraMove: (CameraPosition position) {
-            print("La posicion $position");
           },
         ),
         _floatButtons,
@@ -216,11 +155,8 @@ class _AppMapState extends State<AppMap> {
           InkWell(
             child: MarkerInformation(_markerSelected!),
             onTap: () => setState(() {
-              _markerSelected = null;
               _showInfo = false;
-              _mapController!.animateCamera(
-                CameraUpdate.newCameraPosition(_initialCameraPosition()),
-              );
+              _markerSelected = null;
             }),
           )
       ],
