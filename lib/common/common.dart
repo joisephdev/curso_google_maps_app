@@ -56,4 +56,35 @@ class Common {
       ),
     );
   }
+
+  static mapStyle() {
+    return [
+      {
+        "featureType": "administrative.country",
+        "elementType": "labels.text",
+        "stylers": [
+          {"color": "#8f8f8f"}
+        ]
+      },
+      {
+        "featureType": "poi.attraction",
+        "stylers": [
+          {"visibility": "off"}
+        ]
+      },
+      {
+        "featureType": "poi.business",
+        "stylers": [
+          {"visibility": "off"}
+        ]
+      },
+      {
+        "featureType": "poi.park",
+        "elementType": "labels.text",
+        "stylers": [
+          {"visibility": "off"}
+        ]
+      }
+    ];
+  }
 }

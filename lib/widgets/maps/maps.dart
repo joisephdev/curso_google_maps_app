@@ -92,6 +92,11 @@ class _AppMapState extends State<AppMap> {
     });
   }
 
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+    controller.setMapStyle(Common.mapStyle());
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -110,6 +115,7 @@ class _AppMapState extends State<AppMap> {
           mapToolbarEnabled: false,
           zoomControlsEnabled: false,
           rotateGesturesEnabled: false,
+          onMapCreated: _onMapCreated,
           myLocationEnabled: _myLocationEnabled,
           myLocationButtonEnabled: _myLocationEnabled,
           markers: Set<Marker>.of(_markers.values),
@@ -121,9 +127,6 @@ class _AppMapState extends State<AppMap> {
             tilt: 45,
             target: _currentLatLng,
           ),
-          onMapCreated: (GoogleMapController controller) {
-            _mapController = controller;
-          },
         ),
         Common.floatButtons(
           context,
