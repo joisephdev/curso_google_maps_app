@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:app_google_maps_flutter/common/common.dart';
 import 'package:app_google_maps_flutter/widgets/maps/marker_information.dart';
 import 'package:flutter/material.dart';
@@ -20,26 +22,37 @@ class _AppMapState extends State<AppMap> {
   MapType _mapType = MapType.normal;
   GoogleMapController? _mapController;
 
+  // LOCATION PROPS
+  Location? location;
+  bool _myLocationEnabled = false;
+  LatLng _currentLatLng = defaultLocation;
+
   // MARKER PROPS
   BitmapDescriptor? _markerIcon;
   bool _infoMarkerMap = false;
   MarkerSelected? _markerSelected;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
+  final defaultMarkers = [const LatLng(4.732898371548701, -74.06442115961681)];
 
-  // LOCATION PROPS
-  Location? location;
-  bool _myLocationEnabled = false;
-  final LatLng _currentLatLng = defaultLocation;
+  // POLYLINE PROPS
+  Set<Polyline> _polyLine = <Polyline>{};
 
-  // Build Markers onMap
+  // For markers method - BuildIcon
+  void _buildIconMarkerMap() {
+    const icon = "assets/images/map_co.png";
+    Common.getBytesFromAsset(icon, 84).then((onValue) {
+      setState(() => _markerIcon = BitmapDescriptor.fromBytes(onValue));
+    });
+  }
+
+  // For markers method - BuildMarkers
   void _buildMarkers() {
-    final positions = [const LatLng(4.732898371548701, -74.06442115961681)];
-    for (var p in positions) {
+    for (var p in defaultMarkers) {
       _markers[MarkerId(p.toString())] = Marker(
         position: p,
         anchor: const Offset(0.5, 0.5),
         markerId: MarkerId(p.toString()),
-        zIndex: positions.indexOf(p).toDouble(),
+        zIndex: defaultMarkers.indexOf(p).toDouble(),
         icon: _markerIcon ?? BitmapDescriptor.defaultMarker,
         onTap: () => setState(() {
           _markerSelected = null;
@@ -53,25 +66,46 @@ class _AppMapState extends State<AppMap> {
     }
   }
 
-  void _locationChanged() {
+  // For Polyline method - BuildPolyline
+  void _buildPolyline() {
+    _polyLine.add(
+      Polyline(
+        startCap: Cap.roundCap,
+        endCap: Cap.roundCap,
+        jointType: JointType.bevel,
+        patterns: const <PatternItem>[PatternItem.dot],
+        polylineId: const PolylineId("PolylineMap"),
+        color: Theme.of(context).primaryColor,
+        points: [_currentLatLng, defaultMarkers[0]],
+      ),
+    );
+  }
+
+  /*void _locationChanged() {
     if (location != null) {
       location!.onLocationChanged.listen((onData) {
         _updateLocation(onData);
       });
     }
-  }
+  }*/
 
   void _updateLocation(LocationData locationData) {
+    final latLng = LatLng(locationData.latitude!, locationData.longitude!);
     _mapController!.animateCamera(
       CameraUpdate.newCameraPosition(CameraPosition(
         zoom: 14,
         bearing: 90,
         tilt: 45,
-        target: LatLng(locationData.latitude!, locationData.longitude!),
+        target: latLng,
       )),
     );
 
-    setState(() => _myLocationEnabled = true);
+    setState(() {
+      _currentLatLng = latLng;
+      _myLocationEnabled = true;
+      _buildMarkers();
+      _buildPolyline();
+    });
   }
 
   void _requestPermission() async {
@@ -82,19 +116,9 @@ class _AppMapState extends State<AppMap> {
     // _locationChanged();
   }
 
-  void _buildIconMarkerMap() {
-    const icon = "assets/images/map_co.png";
-    Common.getBytesFromAsset(icon, 84).then((onValue) {
-      setState(() => _markerIcon = BitmapDescriptor.fromBytes(onValue));
-      _buildMarkers();
-    }).catchError((_) {
-      _buildMarkers();
-    });
-  }
-
   void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
-    controller.setMapStyle(Common.mapStyle());
+    controller.setMapStyle(json.encode(Common.mapStyle()));
   }
 
   @override
@@ -118,6 +142,7 @@ class _AppMapState extends State<AppMap> {
           onMapCreated: _onMapCreated,
           myLocationEnabled: _myLocationEnabled,
           myLocationButtonEnabled: _myLocationEnabled,
+          polylines: _polyLine,
           markers: Set<Marker>.of(_markers.values),
           // 1: world, 5: earth/continent , 10: city, 15: street, 20: buildings
           minMaxZoomPreference: const MinMaxZoomPreference(13, 17),
