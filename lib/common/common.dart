@@ -1,7 +1,10 @@
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:location/location.dart';
 
 class Common {
@@ -35,5 +38,22 @@ class Common {
     }
 
     return location;
+  }
+
+  static floatButtons(BuildContext context, List<SpeedDialChild> children) {
+    return Align(
+      alignment: Alignment.bottomRight,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10.0, right: 10),
+        child: SpeedDial(
+          backgroundColor: Theme.of(context).primaryColor,
+          animatedIcon: AnimatedIcons.menu_close,
+          overlayColor: Colors.black,
+          overlayOpacity: 0.5,
+          elevation: 8.0,
+          children: children,
+        ),
+      ),
+    );
   }
 }
