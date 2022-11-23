@@ -178,7 +178,13 @@ class _AppMapState extends State<AppMap> {
       children: [
         GoogleMap(
           mapType: _mapType,
+          mapToolbarEnabled: false,
+          compassEnabled: false,
           zoomControlsEnabled: false,
+          buildingsEnabled: false,
+          rotateGesturesEnabled: false,
+          // scrollGesturesEnabled: false,
+          // zoomGesturesEnabled: false,
           markers: Set<Marker>.of(_markers.values),
           initialCameraPosition: _initialCameraPosition(),
           onTap: _onTapMap,
