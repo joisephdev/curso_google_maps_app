@@ -59,7 +59,11 @@ class _AppMapState extends State<AppMap> {
           _infoMarkerMap = !_infoMarkerMap;
           if (_infoMarkerMap) {
             const iconLocation = "assets/images/codigo_facilito.png";
-            _markerSelected = MarkerSelected("My location", p, iconLocation);
+            _markerSelected = MarkerSelected(
+              "Follow me: @JoisephDev",
+              p,
+              iconLocation,
+            );
           }
         }),
       );

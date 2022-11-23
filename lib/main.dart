@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Google Maps con Flutter',
       // theme: ThemeData(primarySwatch: Colors.indigo),
-      home: const MyHomePage(title: 'Google Maps con Flutter'),
+      home: const MyHomePage(title: 'Google Maps con Flutter - @JoisephDev'),
       theme: ThemeData(
         primaryColor: const Color(0xFF262b34),
       ),
