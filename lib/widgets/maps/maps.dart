@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 
 class AppMap extends StatefulWidget {
   const AppMap({Key? key}) : super(key: key);
@@ -19,7 +20,7 @@ class _AppMapState extends State<AppMap> {
   BitmapDescriptor? _markerIcon;
   GoogleMapController? _mapController;
   final Map<MarkerId, Marker> _markers = <MarkerId, Marker>{};
-  final LatLng _position = const LatLng(4.754308066515901, -74.08905190602582);
+  final LatLng _position = const LatLng(37.17329763573964, -93.28716123289139);
 
   Widget get _floatButtons {
     return Align(
@@ -67,13 +68,6 @@ class _AppMapState extends State<AppMap> {
 
     for (var p in positions) {
       _markers[MarkerId(p.toString())] = Marker(
-        /* alpha: 0.5,
-        draggable: true,
-        onDragEnd: (LatLng position) {},
-        infoWindow: InfoWindow(
-          title: 'Marker Information',
-          snippet: "Lat ${p.latitude} y Long ${p.longitude}",
-        ),*/
         position: p,
         anchor: const Offset(0.5, 0.5),
         markerId: MarkerId(p.toString()),
@@ -81,14 +75,6 @@ class _AppMapState extends State<AppMap> {
           _markerSelected = null;
           _showInfo = !_showInfo;
           if (_showInfo) {
-            /*_mapController!.animateCamera(
-              CameraUpdate.newCameraPosition(
-                const CameraPosition(
-                  zoom: 14,
-                  target: LatLng(12.175843310153466, -68.86858253689769),
-                ),
-              ),
-            );*/
             const iconLocation = "assets/images/codigo_facilito.png";
             _markerSelected = MarkerSelected("My location", p, iconLocation);
           }
@@ -96,9 +82,7 @@ class _AppMapState extends State<AppMap> {
         },
         zIndex: positions.indexOf(p).toDouble(),
         icon: _markerIcon ??
-            BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueViolet,
-            ),
+            BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueViolet),
       );
     }
   }
@@ -125,10 +109,27 @@ class _AppMapState extends State<AppMap> {
     ).then((i) => setState(() => _markerIcon = i));*/
   }
 
+  void _updateToCurrentLocation() async {
+    final location = await Common.requestPermission();
+    LocationData locationData = await location.getLocation();
+    _mapController!.animateCamera(
+      CameraUpdate.newCameraPosition(CameraPosition(
+        zoom: 14,
+        bearing: 90,
+        tilt: 45,
+        target: LatLng(
+          locationData.latitude!,
+          locationData.longitude!,
+        ),
+      )),
+    );
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _buildIcon();
+    _updateToCurrentLocation();
   }
 
   @override

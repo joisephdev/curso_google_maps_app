@@ -6,6 +6,12 @@
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
     <key>io.flutter.embedded_views_preview</key>
     <true/>
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Necesario para la ubicación</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Necesario para la ubicación</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Necesario para la ubicación</string>
 	<key>CFBundleDisplayName</key>
 	<string>Google Maps Con Flutter</string>
 	<key>CFBundleExecutable</key>
